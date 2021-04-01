@@ -3,6 +3,8 @@ import path from 'path'
 import * as Platform from './platform'
 import * as asar from "asar"
 import * as Diff from 'diff'
+import os from 'os'
+import natsort from "natsort";
 import c from 'chalk'
 
 const GREEN_ARROW = c.green('==>');
@@ -10,6 +12,21 @@ const GREEN_ARROW = c.green('==>');
 export const findAsarUnix = (...files) => files.find(file => fs.existsSync(file));
 
 export const findAsarMac = () => findAsarUnix("/Applications/Franz.app/Contents/Resources/app.asar")
+
+export const findAsarWindows = () => {
+  const franzPath = path.join(os.homedir(), "AppData/Local/Programs/franz")
+  if (!fs.existsSync(franzPath)) return undefined
+
+  const apps = fs
+    .readdirSync(franzPath)
+    .filter((item) => item.match(/^app-\d+\.\d+\.\d+$/))
+
+  let [app] = apps.sort(natsort({desc: true}))[0]
+  if (!app) return undefined;
+  
+  app = path.join(franzPath, app, "resources/app.asar");
+  return fs.existsSync(app) ? app : undefined;
+}
 
 export const findAsar = (dir) => {
   if (dir) return path.normalize(dir) + ".asar";
@@ -19,6 +36,8 @@ export const findAsar = (dir) => {
   switch(platform) {
     case Platform.Platforms.macOS:
       return findAsarMac();
+    case Platform.Platforms.windows:
+      return findAsarWindows();
   }
 }
 
