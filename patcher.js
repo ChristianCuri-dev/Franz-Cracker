@@ -21,7 +21,7 @@ export const findAsarWindows = () => {
     .readdirSync(franzPath)
     .filter((item) => item.match(/^app-\d+\.\d+\.\d+$/))
 
-  let [app] = apps.sort(natsort({desc: true}))[0]
+  let [app] = apps.sort(natsort({desc: true}))
   if (!app) return undefined;
   
   app = path.join(franzPath, app, "resources/app.asar");
