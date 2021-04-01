@@ -16,15 +16,7 @@ export const findAsarMac = () => findAsarUnix("/Applications/Franz.app/Contents/
 export const findAsarWindows = () => {
   const franzPath = path.join(os.homedir(), "AppData/Local/Programs/franz")
   if (!fs.existsSync(franzPath)) return undefined
-
-  const apps = fs
-    .readdirSync(franzPath)
-    .filter((item) => item.match(/^app-\d+\.\d+\.\d+$/))
-
-  let [app] = apps.sort(natsort({desc: true}))
-  if (!app) return undefined;
-  
-  app = path.join(franzPath, app, "resources/app.asar");
+  const app = path.join(franzPath, "resources/app.asar");
   return fs.existsSync(app) ? app : undefined;
 }
 
