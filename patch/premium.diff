@@ -1,13 +1,90 @@
 --- api/server/ServerApi.js
 +++ api/server/ServerApi.js
-@@ -147,8 +147,10 @@
+@@ -147,8 +147,35 @@
        throw request;
      }
  
      const data = await request.json();
 +    data.isPremium = true;
 +    data.hasSubscription = true;
++    data.isTeamUser = true;
++    data.isSubscriptionOwner = true;
++
++    const teamObj = {
++      id: "c68b0e64-80dc-4093-928d-7d0f2643d32e",
++      isTrial: true,
++      plan: "franz-pro-monthly",
++      quantity: 1,
++      state: "active",
++      subscriptionId: "59fcb155af033ff0c657734508a54a07",
++      trialEnd: "2025-02-01T00:00:00.000Z",
++      trialStart: "2021-04-01T14:46:09.000Z",
++      usedCouponCode: null,
++      userHasDowngraded: false,
++    }
++    
++    if (!data.team) {
++      data.team = {
++        ...teamObj,
++        userId: data.id,
++      };
++    } else {
++      Object.assign(data.team, teamObj);
++    }
++
      const user = new _User.default(data);
      debug('ServerApi::userInfo resolves', user);
      return user;
    }
+@@ -296,17 +323,39 @@
+     debug('ServerApi::deleteService resolves', data);
+     return data;
+   }
+ 
++  _patchFeatures(data) {
++    data.isCustomUrlIncludedInCurrentPlan = true;
++    data.isMagicBarEnabled = true;
++
++    data.isServiceProxyEnabled = true;
++    data.isServiceProxyPremiumFeature = true;
++    data.isServiceProxyIncludedInCurrentPlan = true;
++
++    data.isSettingsWSEnabled = true;
++
++    data.isSpellcheckerPremiumFeature = true;
++    data.isSpellcheckerIncludedInCurrentPlan = true;
++
++    data.isTeamManagementIncludedInCurrentPlan = true;
++
++    data.isWorkspaceEnabled = true;
++    data.isWorkspacePremiumFeature = true;
++    data.isWorkspaceIncludedInCurrentPlan = true;
++
++    return data;
++  }
++
+   async getDefaultFeatures() {
+     const request = await (0, _auth.sendAuthRequest)(`${API_URL}/features/default`);
+ 
+     if (!request.ok) {
+       throw request;
+     }
+ 
+     const data = await request.json();
+-    const features = data;
++    const features = this._patchFeatures(data);
+     debug('ServerApi::getDefaultFeatures resolves', features);
+     return features;
+   }
+ 
+@@ -317,9 +366,9 @@
+       throw request;
+     }
+ 
+     const data = await request.json();
+-    const features = data;
++    const features = this._patchFeatures(data);;
+     debug('ServerApi::getFeatures resolves', features);
+     return features;
+   }
+ 
