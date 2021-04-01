@@ -1,0 +1,21 @@
+{
+  "name": "franz-cracker",
+  "version": "1.0.0",
+  "description": "Franz Tools non-commercial use",
+  "author": "Christian Curi <c.christiancuri@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://christiancuri.dev",
+  "main": "index.js",
+  "scripts": {
+    "create-diff": "node diff.js",
+    "patch": "node index.js"
+  },
+  "dependencies": {
+    "asar": "^3.0.3",
+    "chalk": "^4.1.0",
+    "diff": "^5.0.0",
+    "esm": "^3.2.25",
+    "figlet": "^1.5.0",
+    "fs-extra": "^9.1.0"
+  }
+}

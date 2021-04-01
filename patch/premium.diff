@@ -1,0 +1,13 @@
+--- api/server/ServerApi.js
++++ api/server/ServerApi.js
+@@ -147,8 +147,10 @@
+       throw request;
+     }
+ 
+     const data = await request.json();
++    data.isPremium = true;
++    data.hasSubscription = true;
+     const user = new _User.default(data);
+     debug('ServerApi::userInfo resolves', user);
+     return user;
+   }
